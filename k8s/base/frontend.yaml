@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: messager
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: workload
+                operator: In
+                values:
+                - app
+      containers:
+      - env:
+        - name: BFF_URL
+          valueFrom:
+            configMapKeyRef:
+              key: FRONTEND_BFF_URL
+              name: messager-config
+        - name: BFF_INTERNAL_URL
+          valueFrom:
+            configMapKeyRef:
+              key: FRONTEND_BFF_INTERNAL_URL
+              name: messager-config
+        image: mablinov2704/frontend:latest
+        name: frontend
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: messager
+spec:
+  type: NodePort
+  selector:
+    app: frontend
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 30080

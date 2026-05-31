@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: message-service
+  namespace: messager
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: message-service
+  template:
+    metadata:
+      labels:
+        app: message-service
+    spec:
+      containers:
+      - env:
+        - name: HTTP_PORT
+          valueFrom:
+            configMapKeyRef:
+              key: MSG_HTTP_PORT
+              name: messager-config
+        - name: DB_DSN
+          valueFrom:
+            secretKeyRef:
+              key: MSG_DB_DSN
+              name: messager-db-secret
+        - name: UPLOADS_DIR
+          valueFrom:
+            configMapKeyRef:
+              key: MSG_UPLOADS_DIR
+              name: messager-config
+        image: mablinov2704/message-service:latest
+        name: message-service
+        ports:
+        - containerPort: 8082
+        resources:
+          requests:
+            cpu: 150m
+            memory: 192Mi
+        volumeMounts:
+        - mountPath: /app/uploads
+          name: uploads
+      volumes:
+      - name: uploads
+        persistentVolumeClaim:
+          claimName: message-uploads-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: message-service
+  namespace: messager
+spec:
+  selector:
+    app: message-service
+  ports:
+    - port: 8082
+      targetPort: 8082

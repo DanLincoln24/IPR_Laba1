@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bff
+  namespace: messager
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bff
+  template:
+    metadata:
+      labels:
+        app: bff
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: workload
+                operator: In
+                values:
+                - app
+      containers:
+      - env:
+        - name: HTTP_PORT
+          valueFrom:
+            configMapKeyRef:
+              key: BFF_HTTP_PORT
+              name: messager-config
+        - name: USER_SERVICE_URL
+          valueFrom:
+            configMapKeyRef:
+              key: USER_SERVICE_URL
+              name: messager-config
+        - name: MSG_SERVICE_URL
+          valueFrom:
+            configMapKeyRef:
+              key: MSG_SERVICE_URL
+              name: messager-config
+        image: mablinov2704/bff:latest
+        name: bff
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            cpu: 150m
+            memory: 192Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bff
+  namespace: messager
+spec:
+  selector:
+    app: bff
+  ports:
+    - port: 8080
+      targetPort: 8080
