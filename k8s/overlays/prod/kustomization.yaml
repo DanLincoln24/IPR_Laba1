@@ -1,0 +1,20 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: messager
+
+resources:
+  - ../../base
+
+patches:
+  - path: patches/replicas.yaml
+  - path: patches/resources.yaml
+
+images:
+  - name: mablinov2704/user-service
+    newTag: v1.0.0
+  - name: mablinov2704/message-service
+    newTag: v1.0.0
+  - name: mablinov2704/bff
+    newTag: v1.0.0
+  - name: mablinov2704/frontend
+    newTag: v1.0.0
