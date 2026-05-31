@@ -173,8 +173,11 @@ spec:
 
 ## Скриншоты
 
+<img width="802" height="288" alt="image" src="https://github.com/user-attachments/assets/426bd757-f676-4457-bc32-4dd31c511c02" />
 – `kubectl get pods -n messager`
+<img width="1860" height="1038" alt="image" src="https://github.com/user-attachments/assets/6ea94b50-d66e-4678-98ec-7a9bab6a1f43" />
 – браузер с `http://localhost:8080`
+<img width="483" height="418" alt="image" src="https://github.com/user-attachments/assets/4786069f-4743-476c-bc2e-c61e272ed156" />
 – Argo CD UI (Synced)
 
 ## Репозиторий
